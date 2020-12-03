@@ -45,9 +45,31 @@ app.use(session({
     store: new FileStore()
 }));
 
+app.use('/', indexRouter); //These are placed before the auth function so users can register
+app.use('/users', usersRouter);
+
 //Middleware functions are applied in the order they are written
 //With this in mind we must autheticate users before they have access to any data
+
 function auth(req, res, next) {
+    console.log(req.session);
+
+    if (!req.session.user) {
+        const err = new Error('You are not authenticated!');
+        err.status = 401;
+        return next(err);
+    } else {
+        if (req.session.user === 'authenticated') {
+            return next();
+        } else {
+            const err = new Error('You are not authenticated!');
+            err.status = 401;
+            return next(err);
+        }
+    }
+}
+
+/*function auth(req, res, next) {
   console.log(req.session);
 
   if (!req.session.user) {
@@ -82,14 +104,12 @@ function auth(req, res, next) {
           return next(err);
       }
   }
-}
+}*/
 
 app.use(auth);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/campsites', campsiteRouter);
 app.use('/promotions', promotionRouter);
 app.use('/partners', partnerRouter);
