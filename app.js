@@ -1,12 +1,13 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
+//var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const session = require('express-session');
-const FileStore = require('session-file-store')(session);
+//const session = require('express-session');
+//const FileStore = require('session-file-store')(session);
 const passport = require('passport');
-const authenticate = require('./authenticate');
+//const authenticate = require('./authenticate');
+const config = require('./config');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -16,7 +17,7 @@ const partnerRouter = require('./routes/partnerRouter');
 
 const mongoose = require('mongoose');
 
-const url = 'mongodb://localhost:27017/nucampsite';
+const url = config.mongoUrl;
 const connect = mongoose.connect(url, {
     useCreateIndex: true,
     useFindAndModify: false,
@@ -39,16 +40,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 //app.use(cookieParser('12345-67890-09876-54321')); //Secret key for signed cookies
 
-app.use(session({
+/*app.use(session({
     name: 'session-id',
     secret: '12345-67890-09876-54321',
     saveUninitialized: false,
     resave: false,
     store: new FileStore()
-}));
+}));*/
 
 app.use(passport.initialize());
-app.use(passport.session());
+//app.use(passport.session());
 
 app.use('/', indexRouter); //These are placed before the auth function so users can register
 app.use('/users', usersRouter);
@@ -56,7 +57,7 @@ app.use('/users', usersRouter);
 //Middleware functions are applied in the order they are written
 //With this in mind we must autheticate users before they have access to any data
 
-function auth(req, res, next) {
+/*function auth(req, res, next) {
     console.log(req.user);
 
     if (!req.user) {
@@ -66,7 +67,7 @@ function auth(req, res, next) {
     } else {
         return next();
     }
-}
+}*/
 
 /*function auth(req, res, next) {
     console.log(req.session);
@@ -123,7 +124,7 @@ function auth(req, res, next) {
   }
 }*/
 
-app.use(auth);
+//app.use(auth);
 
 app.use(express.static(path.join(__dirname, 'public')));
 

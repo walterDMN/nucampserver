@@ -11,7 +11,7 @@ const commentSchema = new Schema({
         max: 5,
         required: true
     },
-    test: {
+    text: {
         type: String,
         required: true
     },
